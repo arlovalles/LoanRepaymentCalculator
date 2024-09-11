@@ -5,7 +5,7 @@ ALLOWABLE_REPAY_FREQUENCIES = ["MONTHLY", "WEEKLY", "QUARTERLY"]
 
 class FREQUENCY:
     '''
-    FREQUENCY class is to provide a static list of supported frequencies for repayment calculations. 
+    DESCRIPTION: FREQUENCY class is to provide a static list of supported frequencies for repayment calculations. 
     Can use module level dictionary FREQUENCY_LOOKUP to get appropriate relativeDelta. 
     
     Example: repaymentFrequency=FREQUENCY_LOOKUP["MONTHLY"] 
@@ -26,23 +26,26 @@ FREQUENCY_LOOKUP={"MONTHLY":FREQUENCY.MONTHLY,
 
 class Loan:
     '''
-    Basic Loan Object - Financial Instrument with basic properties.
-    principalAmount:float
-    interestRate:float
-    startDate:date
-    endDate:date
-    repayFrequency:str  #["MONTHLY", "WEEKLY", "QUARTERLY"]
+    DESCRIPTION: Basic Loan Object - Financial Instrument with basic properties.
+    PROPERTIES:
+        principalAmount:float
+        interestRate:float
+        startDate:date
+        endDate:date
+        repayFrequency:str  #["MONTHLY", "WEEKLY", "QUARTERLY"]
     '''
     principalAmount:float
     startDate:date
     endDate:date
+    repayAmount:float
     repayFrequency:str
     interestRate:float
-    def __init__(self, principalAmount:float, interestRate:float, startDate:date, endDate:date, repayFrequency:str="MONTHLY"):
+    def __init__(self, principalAmount:float, interestRate:float, startDate:date, endDate:date, repayAmount:float, repayFrequency:str="MONTHLY"):
         self.principalAmount = principalAmount
         self.interestRate = interestRate
         self.startDate = startDate
         self.endDate = endDate
+        self.repayAmount = repayAmount
         self.repayFrequency = repayFrequency
 
     def __str__(self):
@@ -64,20 +67,25 @@ class LoanRepayment:
     interestEarned:float
     period:int
     repaymentAmount:float
-    def __init__(self, eventDate:date, principalBalance:float, interestBalance:float, interestEarned:float, repaymentAmount:float, period:int):
+    interestRepaymentAmount:float
+    principalRepaymentAmount:float
+
+    def __init__(self, eventDate:date, principalBalance:float, interestBalance:float, interestEarned:float, repaymentAmount:float, period:int, interestRepaymentAmount:float, principalRepaymentAmount:float):
         self.eventDate = eventDate
         self.principalBalance = principalBalance
         self.interestBalance = interestBalance
         self.interestEarned = interestEarned
         self.repaymentAmount = repaymentAmount
+        self.interestRepaymentAmount = interestRepaymentAmount
+        self.principalRepaymentAmount = principalRepaymentAmount
         self.period = period
 
     def __str__(self):
-        return f"Date: {self.eventDate} Principal: {self.principalBalance} Total Interest: {self.interestBalance} Period Interest Earned: {self.interestEarned} Period: {self.period} Payment Amount: {self.repaymentAmount}"
+        return f"Date: {self.eventDate} Principal Balance: {self.principalBalance} Interest Balance: {self.interestBalance} Period Interest Earned: {self.interestEarned} Period: {self.period} Payment Amount: {self.repaymentAmount} AppliedPrin: {self.principalRepaymentAmount} AppliedInt: {self.interestRepaymentAmount}"
 
 def validate_Loan(loan:Loan, ignoreWarnings:bool=False):
     '''
-    Loan Validation routine. Will raise RuntimeError with messages if errors are detected. 
+    DESCRIPTION: Loan Validation routine. Will raise RuntimeError with messages if errors are detected. 
     '''
     errorMessages={"Warnings":[], "Errors":[]}
     if loan.interestRate <= 0.00:
@@ -99,7 +107,7 @@ def validate_Loan(loan:Loan, ignoreWarnings:bool=False):
 
 def calculateLoanRepayment(loan:Loan):
     '''
-    Loan Repayment Calculation routine. Calculates Repayment Cashflow. 
+    DESCRIPTION: Loan Repayment Calculation routine. Calculates Repayment Cashflow. 
     '''
     repaymentFrequency=FREQUENCY_LOOKUP[loan.repayFrequency]
     currentDate = loan.startDate
@@ -107,51 +115,57 @@ def calculateLoanRepayment(loan:Loan):
     periodDays = 0
     PrincipalBalance = loan.principalAmount
     InterestBalance = 0.00 
+    paymentAmount = 0.00
     lastDate = currentDate
-    payment=0.00
     while currentDate <= loan.endDate:        
         if currentDate > lastDate:
             periodDays = (currentDate - lastDate).days
             periodAccrued = CalculateInterest(principalAmount=PrincipalBalance, annualInterestRate=loan.interestRate, periodDays=periodDays)
-            intPay = InterestBalance
             InterestBalance += periodAccrued
-            #todo: fix this
-            if PrincipalBalance > 0:
-                if PrincipalBalance < 100.00 or currentDate >= loan.endDate:
-                    prinPay = PrincipalBalance
-                else:
-                    prinPay=100.00
+            if InterestBalance > loan.repayAmount:
+                intPay = loan.repayAmount
             else:
-                prinPay = 0.00
+                intPay = InterestBalance
+            
+            prinPay = loan.repayAmount - intPay            
         else:
             prinPay = 0.00
             intPay = 0.00
             periodAccrued = 0.00
                     
+        #todo: fix this
+        if PrincipalBalance <= 0:
+            prinPay=0.00
+        elif PrincipalBalance < loan.repayAmount:
+            prinPay=PrincipalBalance
+        
+        InterestBalance -= intPay
         PrincipalBalance -= prinPay        
-        payment = prinPay + intPay
         lastDate = currentDate
         currentDate = currentDate + repaymentFrequency
+        paymentAmount = prinPay + intPay
         if PrincipalBalance > 0 or InterestBalance > 0:
             repayItems.append(LoanRepayment(eventDate=lastDate, 
-                                repaymentAmount=payment,
+                                repaymentAmount=paymentAmount,
                                 principalBalance=PrincipalBalance, 
                                 interestBalance=InterestBalance,
                                 period=periodDays, 
-                                interestEarned=periodAccrued))    
+                                interestEarned=periodAccrued,
+                                interestRepaymentAmount=intPay,
+                                principalRepaymentAmount=prinPay))    
     
     return repayItems
 
-def CalculateInterest(principalAmount:float=0, annualInterestRate:float=0.00, periodDays=1):
+def CalculateInterest(principalAmount:float=0, annualInterestRate:float=0.00, periodDays:int=1):
     '''
-    Simple Interest Calculation
+    DESCRIPTION: Simple Interest Calculation
     '''
     dailyRate = annualInterestRate/365/100
     return principalAmount * dailyRate * periodDays
 
 def mergeMessages(messages:list=[]):
     '''
-    Merge List of Messages into a single string for reporting.
+    DESCRIPTION: Merge List of Messages into a single string for reporting.
     '''
     result = ""
     result = result.join(messages)
@@ -163,7 +177,7 @@ if __name__ == '__main__':
     Example for testing
     '''
     try:
-        ln = Loan(principalAmount=10000.00, interestRate=.0275, startDate=date(2022,1,15), endDate=date(2027,1,15), repayFrequency="MONTHLY")
+        ln = Loan(principalAmount=10000.00, interestRate=.0275, startDate=date(2022,1,15), endDate=date(2027,1,15), repayAmount=1250.00, repayFrequency="MONTHLY")
         validate_Loan(ln)
         for repayEvent in calculateLoanRepayment(ln):
             print(repayEvent)
