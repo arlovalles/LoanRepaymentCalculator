@@ -15,6 +15,6 @@ if __name__=="__main__":
    '''
    window = LoanRepaymentUI()
    style = ttk.Style(window)
-   style.map("TButton", foreground=[('pressed', 'blue'), ('active', 'white')],
-                        background=[('pressed', '!disabled', 'white'), ('active', 'green')])
+   style.map("TButton", foreground=[('pressed', 'blue'), ('active', 'blue')],
+                        background=[('pressed', '!disabled', 'yellow'), ('active', 'green')])
    window.mainloop()
