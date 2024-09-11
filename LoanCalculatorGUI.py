@@ -12,7 +12,7 @@ class LoanRepaymentUI(tk.Tk):
         self.BegPrin = tk.StringVar(master=self, value="12000.00")
         self.StartDate = tk.StringVar(master=self, value="2022-01-15")
         self.EndDate = tk.StringVar(master=self, value="2024-1-30")
-        self.BaseRate = tk.StringVar(master=self, value=".0275")
+        self.BaseRate = tk.StringVar(master=self, value=".0599")
         self.PaymentAmount = tk.StringVar(master=self, value="1250.00")
         self.FrequencyKeys=list(LoanCalculator.FREQUENCY_LOOKUP.keys())
         self.Frequency = tk.StringVar(master=self, value=self.FrequencyKeys[0])

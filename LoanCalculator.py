@@ -70,18 +70,18 @@ class LoanRepayment:
     interestRepaymentAmount:float
     principalRepaymentAmount:float
 
-    def __init__(self, eventDate:date, principalBalance:float, interestBalance:float, interestEarned:float, repaymentAmount:float, period:int, interestRepaymentAmount:float, principalRepaymentAmount:float):
+    def __init__(self, eventDate:date, principalBalance:float, interestBalance:float, interestEarned:float, period:int, interestRepaymentAmount:float, principalRepaymentAmount:float):
         self.eventDate = eventDate
         self.principalBalance = principalBalance
         self.interestBalance = interestBalance
         self.interestEarned = interestEarned
-        self.repaymentAmount = repaymentAmount
+        self.repaymentAmount = interestRepaymentAmount + principalRepaymentAmount
         self.interestRepaymentAmount = interestRepaymentAmount
         self.principalRepaymentAmount = principalRepaymentAmount
         self.period = period
 
     def __str__(self):
-        return f"Date: {self.eventDate} Principal Balance: {self.principalBalance} Interest Balance: {self.interestBalance} Period Interest Earned: {self.interestEarned} Period: {self.period} Payment Amount: {self.repaymentAmount} AppliedPrin: {self.principalRepaymentAmount} AppliedInt: {self.interestRepaymentAmount}"
+        return f"Date: {self.eventDate} Principal Balance: {self.principalBalance} Interest Balance: {self.interestBalance} Period Interest Earned: {self.interestEarned} Period: {self.period} Payment Amount: (P){self.principalRepaymentAmount} + (I){self.interestRepaymentAmount} = {self.repaymentAmount}"
 
 def validate_Loan(loan:Loan, ignoreWarnings:bool=False):
     '''
@@ -115,7 +115,6 @@ def calculateLoanRepayment(loan:Loan):
     periodDays = 0
     PrincipalBalance = loan.principalAmount
     InterestBalance = 0.00 
-    paymentAmount = 0.00
     lastDate = currentDate
     while currentDate <= loan.endDate:        
         if currentDate > lastDate:
@@ -125,28 +124,27 @@ def calculateLoanRepayment(loan:Loan):
             if InterestBalance > loan.repayAmount:
                 intPay = loan.repayAmount
             else:
-                intPay = InterestBalance
+                intPay = InterestBalance                        
             
-            prinPay = loan.repayAmount - intPay            
+            if PrincipalBalance <= 0:
+                prinPay=0.00
+            elif PrincipalBalance < prinPay:
+                prinPay=PrincipalBalance
+            else:
+                prinPay = loan.repayAmount - intPay
+
         else:
             prinPay = 0.00
             intPay = 0.00
             periodAccrued = 0.00
-                    
-        #todo: fix this
-        if PrincipalBalance <= 0:
-            prinPay=0.00
-        elif PrincipalBalance < loan.repayAmount:
-            prinPay=PrincipalBalance
-        
+                                        
         InterestBalance -= intPay
         PrincipalBalance -= prinPay        
         lastDate = currentDate
         currentDate = currentDate + repaymentFrequency
-        paymentAmount = prinPay + intPay
-        if PrincipalBalance > 0 or InterestBalance > 0:
+        
+        if prinPay > 0 or intPay >0:
             repayItems.append(LoanRepayment(eventDate=lastDate, 
-                                repaymentAmount=paymentAmount,
                                 principalBalance=PrincipalBalance, 
                                 interestBalance=InterestBalance,
                                 period=periodDays, 
