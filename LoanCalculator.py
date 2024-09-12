@@ -1,5 +1,6 @@
 from datetime import date
 from dateutil.relativedelta import relativedelta
+import json
 
 ALLOWABLE_REPAY_FREQUENCIES = ["MONTHLY", "WEEKLY", "QUARTERLY"]
 
@@ -80,6 +81,16 @@ class LoanRepayment:
         self.principalRepaymentAmount = principalRepaymentAmount
         self.period = period
 
+    def toJson(self):
+        return json.dumps({"date":self.eventDate.strftime('%m-%d-%Y'), 
+                           "PrincipalBalance":self.principalBalance, 
+                           "InterestBalance":self.interestBalance, 
+                           "PeriodInterestEarned":self.interestEarned, 
+                           "RepaymentAmount":self.repaymentAmount, 
+                           "InterestRepaymentAmount":self.interestRepaymentAmount, 
+                           "PrincipalRepaymentAmount":self.principalRepaymentAmount,
+                           "Period":self.period}, indent=4)
+    
     def __str__(self):
         return f"Date: {self.eventDate} Principal Balance: {self.principalBalance} Interest Balance: {self.interestBalance} Period Interest Earned: {self.interestEarned} Period: {self.period} Payment Amount: (P){self.principalRepaymentAmount} + (I){self.interestRepaymentAmount} = {self.repaymentAmount}"
 
@@ -150,7 +161,7 @@ def calculateLoanRepayment(loan:Loan):
                                 period=periodDays, 
                                 interestEarned=periodAccrued,
                                 interestRepaymentAmount=intPay,
-                                principalRepaymentAmount=prinPay))    
+                                principalRepaymentAmount=prinPay).toJson())    
     
     return repayItems
 
@@ -177,7 +188,7 @@ if __name__ == '__main__':
     try:
         ln = Loan(principalAmount=10000.00, interestRate=.0275, startDate=date(2022,1,15), endDate=date(2027,1,15), repayAmount=1250.00, repayFrequency="MONTHLY")
         validate_Loan(ln)
-        for repayEvent in calculateLoanRepayment(ln):
-            print(repayEvent)
+        print(calculateLoanRepayment(ln))
     except Exception as e:
         print(e, ln)
+

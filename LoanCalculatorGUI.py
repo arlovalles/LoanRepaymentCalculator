@@ -1,4 +1,5 @@
 import tkinter as tk
+from tkinter import filedialog
 from tkinter import ttk
 from datetime import date
 import LoanCalculator
@@ -19,9 +20,11 @@ class LoanRepaymentUI(tk.Tk):
         
         #Buttons
         self.Exit = ttk.Button(master=self.mainWindow, text="Quit", command=self.quit)
-        self.Exit.grid(row=0, column=0, sticky=tk.NW)
+        self.Exit.grid(row=0, column=0, sticky=tk.NW, padx=1, pady=4)
         self.Calculate = ttk.Button(master=self.mainWindow, text="Calculate", command=self.calculate)
-        self.Calculate.grid(row=0, column=1, sticky=tk.NW)
+        self.Calculate.grid(row=0, column=1, sticky=tk.NW, padx=1, pady=4)
+        self.SaveResults = ttk.Button(master=self.mainWindow, text="Save", command=self.saveResults)
+        self.SaveResults.grid(row=0, column=2, sticky=tk.NW, padx=1, pady=4)
 
         #Controls
         self.mainWindow.grid(row=1, column=0)        
@@ -32,7 +35,7 @@ class LoanRepaymentUI(tk.Tk):
         self.EndDateEntry = ttk.Entry(master=self.frameInputs,textvariable=self.EndDate)        
         self.BegPrinLabel = ttk.Label(master=self.frameInputs, text="Beginning Prin")
         self.BegPrinEntry = ttk.Entry(master=self.frameInputs,textvariable=self.BegPrin)        
-        self.BaseRateLabel = ttk.Label(master=self.frameInputs,text="Base Rate")
+        self.BaseRateLabel = ttk.Label(master=self.frameInputs,text="Annual Interest Rate")
         self.BaseRateEntry = ttk.Entry(master=self.frameInputs,textvariable=self.BaseRate)        
         self.PaymentAmountLabel = ttk.Label(master=self.frameInputs,text="Payment Amount")
         self.PaymentAmountEntry = ttk.Entry(master=self.frameInputs,textvariable=self.PaymentAmount)        
@@ -40,22 +43,34 @@ class LoanRepaymentUI(tk.Tk):
         self.FrequencyCbox = ttk.Combobox(master=self.frameInputs,textvariable=self.Frequency, values=self.FrequencyKeys)        
         
         #Components Grid Layout
-        self.StartDateLabel.grid(row=0, column=0, sticky=tk.W)
-        self.StartDateEntry.grid(row=0, column=1, sticky=tk.W)
-        self.EndDateLabel.grid(row=1, column=0, sticky=tk.W)
-        self.EndDateEntry.grid(row=1, column=1, sticky=tk.W)
-        self.BegPrinLabel.grid(row=2, column=0, sticky=tk.W)
-        self.BegPrinEntry.grid(row=2, column=1, sticky=tk.W)
-        self.BaseRateLabel.grid(row=3, column=0, sticky=tk.W)
-        self.BaseRateEntry.grid(row=3, column=1, sticky=tk.W)        
-        self.PaymentAmountLabel.grid(row=4, column=0, sticky=tk.W)
-        self.PaymentAmountEntry.grid(row=4, column=1, sticky=tk.W)        
-        self.FrequencyLabel.grid(row=5, column=0, sticky=tk.W)
-        self.FrequencyCbox.grid(row=5, column=1, sticky=tk.W)        
+        self.StartDateLabel.grid(row=0, column=0, sticky=tk.W, padx=2, pady=2)
+        self.StartDateEntry.grid(row=0, column=1, sticky=tk.W, padx=2, pady=2)
+        self.EndDateLabel.grid(row=1, column=0, sticky=tk.W, padx=2, pady=2)
+        self.EndDateEntry.grid(row=1, column=1, sticky=tk.W, padx=2, pady=2)
+        self.BegPrinLabel.grid(row=2, column=0, sticky=tk.W, padx=2, pady=2)
+        self.BegPrinEntry.grid(row=2, column=1, sticky=tk.W, padx=2, pady=2)
+        self.BaseRateLabel.grid(row=3, column=0, sticky=tk.W, padx=2, pady=2)
+        self.BaseRateEntry.grid(row=3, column=1, sticky=tk.W, padx=2, pady=2)        
+        self.PaymentAmountLabel.grid(row=4, column=0, sticky=tk.W, padx=2, pady=2)
+        self.PaymentAmountEntry.grid(row=4, column=1, sticky=tk.W, padx=2, pady=2)        
+        self.FrequencyLabel.grid(row=5, column=0, sticky=tk.W, padx=2, pady=2)
+        self.FrequencyCbox.grid(row=5, column=1, sticky=tk.W, padx=2, pady=2)        
         #Frame Grid Layout
-        self.frameInputs.grid(row=1, column=0, rowspan=3, columnspan=3, sticky=tk.W)
+        self.frameInputs.grid(row=1, column=0, rowspan=3, columnspan=3, sticky=tk.W, padx=5, pady=5)
+        #Other
+        self.LastResult = None
 
-    def calculate(self, *args, **kwargs):
+    def saveResults(self):
+        #Save Results to File
+        f = filedialog.asksaveasfile(master=self, mode="w", filetypes=[("Json Files","*.json"),("Text Files","*.txt")])
+        if f is not None:
+            f.write(f"[")
+            for i in self.LastResult:
+                f.write(f"{i},\n")
+            f.write(f"]\n")
+            f.close()
+        
+    def calculate(self):
         try:
             sd = self.StartDate.get().split('-')
             ed = self.EndDate.get().split('-')
@@ -67,9 +82,8 @@ class LoanRepaymentUI(tk.Tk):
                                    endDate=edate, 
                                    repayFrequency=self.Frequency.get(),
                                    repayAmount=float(self.PaymentAmount.get()))
-            result = LoanCalculator.calculateLoanRepayment(loan)
-            for repayEvent in result:
-                print(repayEvent)
+            self.LastResult = LoanCalculator.calculateLoanRepayment(loan)
+            print(self.LastResult)
         except Exception as e:
             print(f"Error: {e}")                        
 
