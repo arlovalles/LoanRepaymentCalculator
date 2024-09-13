@@ -62,13 +62,10 @@ class LoanRepaymentUI(tk.Tk):
 
     def saveResults(self):
         #Save Results to File
-        f = filedialog.asksaveasfile(master=self, mode="w", filetypes=[("Json Files","*.json"),("Text Files","*.txt")])
-        if f is not None:
-            f.write(f"[")
-            for i in self.LastResult:
-                f.write(f"{i},\n")
-            f.write(f"]\n")
-            f.close()
+        outFile = filedialog.asksaveasfile(master=self, mode="w", filetypes=[("Json Files","*.json"),("Text Files","*.txt")])
+        if outFile is not None:
+            outFile.write(self.LastResult)
+            outFile.close()
         
     def calculate(self):
         try:

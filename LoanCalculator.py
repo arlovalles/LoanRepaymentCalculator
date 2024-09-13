@@ -120,7 +120,7 @@ def validate_Loan(loan:Loan, ignoreWarnings:bool=False):
     if loan.startDate is not None and loan.endDate is not None and loan.endDate <= loan.startDate:
         errorMessages["Errors"].append("\nEndDate must be after the Start Date.")
     if loan.repayFrequency not in ALLOWABLE_REPAY_FREQUENCIES:
-        errorMessages["Errors"].append("\nUnknwon Repayment Frequency.")
+        errorMessages["Errors"].append("\nUnknown Repayment Frequency.")
     if len(errorMessages["Errors"]) > 0:
         raise RuntimeError(mergeMessages(errorMessages["Errors"]))
     if len(errorMessages["Warnings"]) > 0 and not ignoreWarnings:
