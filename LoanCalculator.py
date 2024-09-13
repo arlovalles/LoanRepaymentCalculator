@@ -50,7 +50,7 @@ class Loan:
         self.repayFrequency = repayFrequency
 
     def __str__(self):
-        return f"\nStart Date: {self.startDate}\nEndDate: {self.endDate}\nPrincipal: {self.principalAmount}\nInterestRate: {self.interestRate}\nRepayed: {self.repayFrequency}"
+        return f"\nStart Date: {self.startDate}\nEndDate: {self.endDate}\nPrincipal: {self.principalAmount}\nInterestRate: {self.interestRate}\nRepayed: {self.repayFrequency}\nRepaymentAmount: {self.repayAmount}"
 
 class LoanRepayment:
     '''
@@ -198,6 +198,7 @@ if __name__ == '__main__':
     try:
         ln = Loan(principalAmount=10000.00, interestRate=.0275, startDate=date(2022,1,15), endDate=date(2027,1,15), repayAmount=1250.00, repayFrequency="MONTHLY")
         validate_Loan(ln)
+        print(ln)
         print(calculateLoanRepayment(ln))
     except Exception as e:
         print(e, ln)
