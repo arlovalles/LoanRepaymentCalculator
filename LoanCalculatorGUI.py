@@ -9,7 +9,7 @@ class LoanRepaymentUI(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.mainWindow = ttk.Frame(master=self, width=250, height=100)        
         
-        #INPUT String Vars
+        # String Vars
         self.BegPrin = tk.StringVar(master=self, value="12000.00")
         self.StartDate = tk.StringVar(master=self, value="2022-01-15")
         self.EndDate = tk.StringVar(master=self, value="2024-1-30")
@@ -18,7 +18,7 @@ class LoanRepaymentUI(tk.Tk):
         self.FrequencyKeys=list(LoanCalculator.FREQUENCY_LOOKUP.keys())
         self.Frequency = tk.StringVar(master=self, value=self.FrequencyKeys[0])
         
-        #Buttons
+        # Buttons
         self.Exit = ttk.Button(master=self.mainWindow, text="Quit", command=self.quit)
         self.Exit.grid(row=0, column=0, sticky=tk.NW, padx=1, pady=4)
         self.Calculate = ttk.Button(master=self.mainWindow, text="Calculate", command=self.calculate)
@@ -26,7 +26,7 @@ class LoanRepaymentUI(tk.Tk):
         self.SaveResults = ttk.Button(master=self.mainWindow, text="Save", command=self.saveResults)
         self.SaveResults.grid(row=0, column=2, sticky=tk.NW, padx=1, pady=4)
 
-        #Controls
+        # Controls
         self.mainWindow.grid(row=1, column=0)        
         self.frameInputs = ttk.Frame(master=self.mainWindow)
         self.StartDateLabel = ttk.Label(master=self.frameInputs,text="Start Date")
@@ -42,7 +42,7 @@ class LoanRepaymentUI(tk.Tk):
         self.FrequencyLabel = ttk.Label(master=self.frameInputs,text="Frequency")
         self.FrequencyCbox = ttk.Combobox(master=self.frameInputs,textvariable=self.Frequency, values=self.FrequencyKeys)        
         
-        #Components Grid Layout
+        # Components Grid Layout
         self.StartDateLabel.grid(row=0, column=0, sticky=tk.W, padx=2, pady=2)
         self.StartDateEntry.grid(row=0, column=1, sticky=tk.W, padx=2, pady=2)
         self.EndDateLabel.grid(row=1, column=0, sticky=tk.W, padx=2, pady=2)

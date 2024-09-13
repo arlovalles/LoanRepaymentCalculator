@@ -89,8 +89,18 @@ class LoanRepayment:
                            "RepaymentAmount":self.repaymentAmount, 
                            "InterestRepaymentAmount":self.interestRepaymentAmount, 
                            "PrincipalRepaymentAmount":self.principalRepaymentAmount,
-                           "Period":self.period}, indent=4)
-    
+                           "Period":self.period})
+
+    def toDict(self):
+        return {"date":self.eventDate.strftime('%m-%d-%Y'), 
+                           "PrincipalBalance":self.principalBalance, 
+                           "InterestBalance":self.interestBalance, 
+                           "PeriodInterestEarned":self.interestEarned, 
+                           "RepaymentAmount":self.repaymentAmount, 
+                           "InterestRepaymentAmount":self.interestRepaymentAmount, 
+                           "PrincipalRepaymentAmount":self.principalRepaymentAmount,
+                           "Period":self.period}
+
     def __str__(self):
         return f"Date: {self.eventDate} Principal Balance: {self.principalBalance} Interest Balance: {self.interestBalance} Period Interest Earned: {self.interestEarned} Period: {self.period} Payment Amount: (P){self.principalRepaymentAmount} + (I){self.interestRepaymentAmount} = {self.repaymentAmount}"
 
@@ -161,9 +171,9 @@ def calculateLoanRepayment(loan:Loan):
                                 period=periodDays, 
                                 interestEarned=periodAccrued,
                                 interestRepaymentAmount=intPay,
-                                principalRepaymentAmount=prinPay).toJson())    
+                                principalRepaymentAmount=prinPay).toDict())    
     
-    return repayItems
+    return json.dumps(repayItems)
 
 def CalculateInterest(principalAmount:float=0, annualInterestRate:float=0.00, periodDays:int=1):
     '''
