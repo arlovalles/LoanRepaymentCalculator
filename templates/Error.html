@@ -1,8 +1,24 @@
 <!doctype html>
-<title>Error Encountered</title>
-<h1>An Error occurred</h1>
-{% if error %}
-  <h2>{{ error }}</h1>
-{% else %}
-  <h2>No error info provided.</h2>
-{% endif %}
+<html>
+  <style>
+  body {
+    color-scheme: dark;
+    padding: auto;
+  }
+  </style>
+  <title>Error Encountered</title>
+  <head>
+    <a href="http://localhost:5000/loancalculation">Reset</a><br>
+  </head>
+  <body>
+    <h1>An Error occurred</h1>
+    {% if error %}
+      <h2>{{ error }}</h1>
+    {% else %}
+      <h2>No error info provided.</h2>
+    {% endif %}    
+  </body>
+  <footer>
+    <a href="javascript:history.back()">Go Back</a>
+  </footer>
+</html>

@@ -1,7 +1,46 @@
 <!doctype html>
-<title>Hello from Flask</title>
-{% if data %}
-  <h1>{{ data }}</h1>
-{% else %}
-  <h1>Hello, World!</h1>
-{% endif %}
+<html>
+  <style>
+  body {    
+    padding: auto;
+  }
+  </style>
+  <title>Loan Calculator</title>
+  <head>
+    <a href="http://localhost:5000/loancalculation">Reset</a><br>
+  </head>
+  <body>
+    <form id="usrform" action="/loancalculation">
+      <label>Principal Amount</label>
+      <input type="float" id="principalAmount" name="principalAmount"><br>
+      <label>Interest Rate</label>
+      <input type="float" id="interestRate" name="interestRate"><br>
+      <label>Start Date</label>
+      <input type="text" id="startDate" name="startDate"><br>
+      <label>End Date</label>
+      <input type="text" id="endDate" name="endDate"><br>
+      <label>Repay Amount</label>
+      <input type="float" id="repayAmount" name="repayAmount"><br>
+      <label>Repay Frequency</label>
+      <select name="repayFrequency" id="repayFrequency">
+        <option value="">--Please choose an option--</option>
+        <option value="MONTHLY">Monthly</option>
+        <option value="WEEKLY">Weekly</option>
+        <option value="QUARTERLY">Quarterly</option>
+        <option value="ANNUALLY">Annually</option>
+      </select><br>
+      <input type="submit" value="Submit" formaction="/loancalculation">
+    </form>
+<form id="displayData">
+  <label>Data</label><br>
+  <textarea id="textArea1" name="txtData" cols="96" rows="48">
+    {% if data %}
+    {{ data }} 
+    {% endif %}
+  </textarea>
+</form>
+  </body>
+  <footer>
+    <a href="javascript:history.back()">Go Back</a>
+  </footer>
+</html>
