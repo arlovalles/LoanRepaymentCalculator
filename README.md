@@ -7,4 +7,4 @@ LoanCalculatorGUI.py - Basic TkInter UI for accessing functionality in LoanCalcu
 
 LoanCalculationServer.py - Basic Flask Server to make Api available. It includes a simple Html template. Usage: to start, use "flask --app LoanCalculationServer run --debug"
 
-I added Angular FrontEnd in ./angularUI folder, should be able to start in that directory with ng serve.
+I added Angular FrontEnd in ./angularUI folder, should be able to start in that directory with ng serve. It requires LoanCalculatorServer.py to be running.
