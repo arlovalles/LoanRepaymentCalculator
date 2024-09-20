@@ -1,7 +1,6 @@
 from flask import Flask, request, render_template
 from datetime import date
 import LoanCalculator
-import json
 
 app = Flask(__name__)
 
@@ -9,16 +8,6 @@ app = Flask(__name__)
 def index():
     return "<p>Server is up and working!</p>"
 
-#@app.route("/loancalculation", methods=['GET'])
-#def loancalculation_get():
-#    result = None
-#    try:
-#        result = render_template('LoanRepayment.html', data=None)
-#    except Exception as e:
-#        result = render_template('Error.html', error=e)
-#    return result
-
-#@app.get("/loancalculation/calculate/<float:principalAmount><float:interestRate><string:startDate><string:endDate><float:repayAmount><string:repayFrequency>", methods=['GET'])
 @app.get("/loancalculation/")
 def loancalculation_get(principalAmount:float=None, interestRate:float=None, startDate:str=None, endDate:str=None, repayAmount:float=None, repayFrequency:str=None):
     result = None
@@ -63,7 +52,7 @@ def loancalculation_post():
                                     endDate=format_date(data["EndDate"]), 
                                     repayAmount=float(data["RepaymentAmount"]), 
                                     repayFrequency=data["RepaymentFrequency"])
-        result = render_template('LoanRepayment.html', data=data)
+        result = data
     except Exception as e:
         print(e)
         result = render_template('Error.html', error=e)
@@ -102,4 +91,11 @@ def processCalculation(startDate:date, endDate:date, principalAmount:float=0.00,
 def format_date(arg:str)->date:
      d = arg.split('-')
      return date(year=int(d[0]), month=int(d[1]), day=int(d[2]))
-     
+
+
+'''
+This module needs to be started using flask.
+Example:  flask --app LoanCalculationServer run --debug
+'''
+if __name__ == '__main__':
+    pass     

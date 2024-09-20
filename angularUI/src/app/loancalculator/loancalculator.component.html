@@ -1,0 +1,19 @@
+<form [formGroup]="crForm" (ngSubmit)="onSubmit()">
+  <label>Principal Amount:</label>
+  <input type="float" id="principalAmount" formControlName="principalAmount"><br>
+  <label>Interest Rate:</label>
+  <input type="float" id="interestRate" formControlName="interestRateAnnual"><br>
+  <label>Start Date:</label>
+  <input type="text" id="startDate" formControlName="startDate"><br>
+  <label>End Date:</label>
+  <input type="text" id="endDate" formControlName="endDate"><br>
+  <label>Repay Amount:</label>
+  <input type="float" id="repayAmount" formControlName="repayAmount"><br>
+  <label>Repay Frequency:</label>
+  <select formControlName="repayFrequency">
+      <option *ngFor="let freq of frequencies" [ngValue]="freq">
+        {{ freq }}
+      </option>
+  </select><br>
+  <button type="submit" [disabled]="!crForm.valid">Submit</button>
+</form>

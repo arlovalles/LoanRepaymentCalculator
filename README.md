@@ -6,3 +6,5 @@ LoanCalculator.py - Module includes calculation functions. Executing Module Main
 LoanCalculatorGUI.py - Basic TkInter UI for accessing functionality in LoanCalculator.py. Depends on LoanCalculator.py.
 
 LoanCalculationServer.py - Basic Flask Server to make Api available. It includes a simple Html template. Usage: to start, use "flask --app LoanCalculationServer run --debug"
+
+I added Angular FrontEnd in ./angularUI folder, should be able to start in that directory with ng serve.
