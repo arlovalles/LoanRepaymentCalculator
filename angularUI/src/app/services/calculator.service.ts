@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
-import { CalculationRequest } from './CalculationRequest';
+import { CalculationRequest } from '../model/CalculationRequest';
 import { catchError, map, Observable, throwError } from 'rxjs';
 
 @Injectable({

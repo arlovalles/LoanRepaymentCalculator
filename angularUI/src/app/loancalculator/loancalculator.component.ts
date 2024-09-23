@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, ReactiveFormsModule} from '@angular/forms';
-import { CalculatorService } from '../calculator.service';
-import { CalculationRequest } from '../CalculationRequest';
-import { CalculationResult } from '../CalculationResult';
+import { CalculatorService } from '../services/calculator.service';
+import { CalculationRequest } from '../model/CalculationRequest';
+import { CalculationResult } from '../model/CalculationResult';
 
 @Component({
   selector: 'app-loancalculator',
