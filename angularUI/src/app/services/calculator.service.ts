@@ -1,50 +1,32 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { CalculationRequest } from '../model/CalculationRequest';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import { CalculationResult } from '../model/CalculationResult';
+import { Observable } from 'rxjs';
+import { MessageService } from './message.service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class CalculatorService {
-  private url='http://127.0.0.1:5000/loancalculation'
-  private httpOptions = {
-    headers: new HttpHeaders({
-      'Content-Type':  'application/json'
-    })
-  };
+  private url='http://127.0.0.1:5000/loancalculation';
+  constructor(private http:HttpClient, private messageService:MessageService) {}
 
-  constructor(private http:HttpClient) {}
+  calculate(calculationRequest:CalculationRequest):Observable<CalculationResult[]>{    
+    const params = new HttpParams()
+      .set('principalAmount', calculationRequest.PrincipalAmount)
+      .set('interestRate', calculationRequest.InterestRate)
+      .set('startDate', calculationRequest.StartDate.toString())
+      .set('endDate', calculationRequest.EndDate.toString())
+      .set('repayAmount', calculationRequest.RepaymentAmount)
+      .set('repayFrequency', calculationRequest.RepaymentFrequency);
 
-  calculation_post(calculationRequest:CalculationRequest){    
-    this.http.post<CalculationRequest>(this.url, calculationRequest, this.httpOptions)
-          .pipe(
-            map((result)=>{
-              return result;
-            }),
-            catchError(this.handleError)
-          );
-
+      return this.http.get<CalculationResult[]>(this.url, {params});
   }
 
-  sendMessage(message:string) {
-    console.warn("Calculating..... " + message);
-    return;
-  }
-
-  private handleError(error: HttpErrorResponse) {
-    if (error.status === 0) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error);
-    } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong.
-      console.error(
-        `Backend returned code ${error.status}, body was: `, error.error);
-    }
-    // Return an observable with a user-facing error message.
-    return throwError(() => new Error('Something bad happened; please try again later.'));
+  private log(message: string) {
+    this.messageService.add(`CalcService: ${message}`);
   }
 
 }

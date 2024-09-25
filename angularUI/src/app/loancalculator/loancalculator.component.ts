@@ -4,6 +4,7 @@ import { FormGroup, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import { CalculatorService } from '../services/calculator.service';
 import { CalculationRequest } from '../model/CalculationRequest';
 import { CalculationResult } from '../model/CalculationResult';
+import { MessageService } from '../services/message.service';
 
 @Component({
   selector: 'app-loancalculator',
@@ -15,19 +16,27 @@ import { CalculationResult } from '../model/CalculationResult';
 
 export class LoancalculatorComponent {
 
-  frequencies:string[] = ["MONTHLY", "WEEKLY", "QUARTERLY", "ANNUALLY"];
-  crForm : FormGroup;
-  selectedFrequency:string="";
-  lastResult:CalculationResult[] = [];
+  protected frequencies:string[] = ["MONTHLY", "WEEKLY", "QUARTERLY", "ANNUALLY"];
+  protected crForm : FormGroup;
+  protected selectedFrequency:string="";
+  protected calcResult:CalculationResult[] = [];
+  private dummyResult:CalculationResult = { date:"2024-01-01",
+                                    PrincipalBalance:999.99,
+                                    InterestBalance:88.88,
+                                    PeriodInterestEarned:123.45,
+                                    RepaymentAmount:2.99,
+                                    InterestRepaymentAmount:1.99,
+                                    PrincipalRepaymentAmount:1.00,
+                                    Period:30};
 
-  calculationRequest:CalculationRequest = { PrincipalAmount:0.00,
-                                            InterestRateAnnual:0.00,
-                                            StartDate:new Date(),
-                                            EndDate:new Date(),
+  private calculationRequest:CalculationRequest = { PrincipalAmount:0.00,
+                                            InterestRate:0.00,
+                                            StartDate:"",
+                                            EndDate:"",
                                             RepaymentAmount:0.00,
-                                            RepaymentFrequency:"" }
+                                            RepaymentFrequency:"" };
 
-  constructor(private fb:FormBuilder, private calculatorService:CalculatorService){
+  constructor(private fb:FormBuilder, private calculatorService:CalculatorService, private messageService:MessageService){
     this.calculatorService = calculatorService;
     this.crForm = this.fb.group({
       principalAmount:'',
@@ -50,24 +59,35 @@ export class LoancalculatorComponent {
     this.selectedFrequency = value;    
   }
 
-  onSubmit():void {
-    this.calculate();
+  SendMessage(message:string):void {
+    this.messageService.add(message);
   }
 
-  calculate():void {
+  onAddDummyResult():void {
+    this.calcResult.push(this.dummyResult);
+  }
 
+  onClearResults():void {
+    this.calcResult = [];
+  }
+
+  onCalculate():void {
     this.calculationRequest = {
-        PrincipalAmount:this.crForm.get("principalAmount")?.value,
-        InterestRateAnnual:this.crForm.get("interestRate")?.value,
-        StartDate:this.crForm.get("startDate")?.value,
-        EndDate:this.crForm.get("endDate")?.value,
-        RepaymentAmount:this.crForm.get("repayAmount")?.value,
-        RepaymentFrequency:this.crForm.get("repayFrequency")?.value 
-      };        
-    
-    console.log(this.calculationRequest);      
-    this.calculatorService.calculation_post(this.calculationRequest);  
+      PrincipalAmount:this.crForm.get("principalAmount")?.value,
+      InterestRate:this.crForm.get("interestRate")?.value,
+      StartDate:this.crForm.get("startDate")?.value,
+      EndDate:this.crForm.get("endDate")?.value,
+      RepaymentAmount:this.crForm.get("repayAmount")?.value,
+      RepaymentFrequency:this.crForm.get("repayFrequency")?.value 
+    };        
 
+    this.calculatorService.calculate(this.calculationRequest).subscribe({
+      next: (results:CalculationResult[]) => this.calcResult = results,
+      error: (e) => this.SendMessage("Error -> " + e.message),
+      complete:() => this.SendMessage("Complete.")
+    });
+
+    console.log(this.calcResult.length);
   }
-
+  
 }

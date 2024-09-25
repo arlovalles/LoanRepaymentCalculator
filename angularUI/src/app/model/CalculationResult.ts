@@ -1,5 +1,5 @@
 export interface CalculationResult{
-    date:Date;
+    date:string;
     PrincipalBalance:number;
     InterestBalance:number;
     PeriodInterestEarned:number;

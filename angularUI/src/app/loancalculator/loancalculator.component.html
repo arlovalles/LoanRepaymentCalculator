@@ -1,8 +1,9 @@
-<form [formGroup]="crForm" (ngSubmit)="onSubmit()">
+<div>
+<form [formGroup]="crForm" (ngSubmit)="onCalculate()">
   <label>Principal Amount:</label>
   <input type="float" id="principalAmount" formControlName="principalAmount"><br>
   <label>Interest Rate:</label>
-  <input type="float" id="interestRate" formControlName="interestRateAnnual"><br>
+  <input type="float" id="interestRate" formControlName="interestRate"><br>
   <label>Start Date:</label>
   <input type="text" id="startDate" formControlName="startDate"><br>
   <label>End Date:</label>
@@ -15,5 +16,32 @@
         {{ freq }}
       </option>
   </select><br>
-  <button type="submit" [disabled]="!crForm.valid">Submit</button>
+  <button type="button" (click)="onCalculate()">GET</button>
 </form>
+</div>
+<div>
+<button type="button" (click)="onAddDummyResult()">Add Dummy Result</button>
+<button type="button" (click)="SendMessage('test')">Add Message</button>
+</div>
+<div *ngIf="calcResult.length">
+  <h2>Results</h2>
+  <button type="button" (click)="onClearResults()">Clear Results</button>
+  <table>    
+    <tr>
+      <th>Date</th>
+      <th>Principal Balance</th>
+      <th>Principal Repayment Amount</th>
+      <th>Interest Balance</th>
+      <th>Interest Repayment Amount</th>
+      <th>Period</th>
+    </tr>
+      <tr *ngFor='let result of calcResult'>
+        <td>{{result.date}}</td>
+        <td>{{result.PrincipalBalance}}</td>
+        <td>{{result.PrincipalRepaymentAmount}}</td>
+        <td>{{result.InterestBalance}}</td>
+        <td>{{result.InterestRepaymentAmount}}</td>        
+        <td>{{result.Period}}</td>        
+      </tr>    
+</table>
+</div>

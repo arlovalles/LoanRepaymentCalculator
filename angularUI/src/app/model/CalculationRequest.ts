@@ -1,8 +1,8 @@
 export interface CalculationRequest{    
     PrincipalAmount:number;
-    InterestRateAnnual:number;
-    StartDate:Date;
-    EndDate:Date;
+    InterestRate:number;
+    StartDate:string;
+    EndDate:string;
     RepaymentAmount:number;
     RepaymentFrequency:string;
 }
