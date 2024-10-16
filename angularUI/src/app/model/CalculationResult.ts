@@ -8,4 +8,3 @@ export interface CalculationResult{
     PrincipalRepaymentAmount:number;
     Period:number;
 }
-

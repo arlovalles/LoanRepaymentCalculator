@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { CalculationRequest } from '../model/CalculationRequest';
-import { CalculationResult } from '../model/CalculationResult';
+import { CalculationResult} from '../model/CalculationResult';
 import { Observable } from 'rxjs';
 import { MessageService } from './message.service';
 
@@ -10,7 +10,8 @@ import { MessageService } from './message.service';
 })
 
 export class CalculatorService {
-  private url='http://127.0.0.1:5000/loancalculation';
+  private url='http://localhost:8000/loancalculator';
+  responseType = 'arraybuffer'
   constructor(private http:HttpClient, private messageService:MessageService) {}
 
   calculate(calculationRequest:CalculationRequest):Observable<CalculationResult[]>{    

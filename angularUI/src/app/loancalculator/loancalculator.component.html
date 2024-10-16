@@ -15,17 +15,17 @@
       <option *ngFor="let freq of frequencies" [ngValue]="freq">
         {{ freq }}
       </option>
-  </select><br>
-  <button type="button" (click)="onCalculate()">GET</button>
+  </select><br>  
 </form>
 </div>
-<div>
-<button type="button" (click)="onAddDummyResult()">Add Dummy Result</button>
-<button type="button" (click)="SendMessage('test')">Add Message</button>
+<div class="toolbar">
+  <button type="button" (click)="onCalculate()">GET</button>
+  <button type="button" (click)="onAddDummyResult()">Add Dummy Result</button>
+  <button type="button" (click)="SendMessage('test')">Add Message</button>
 </div>
-<div *ngIf="calcResult.length">
+<div class="column full" *ngIf="calcResults.length">
   <h2>Results</h2>
-  <button type="button" (click)="onClearResults()">Clear Results</button>
+  <button type="button" (click)="onClearOutput()">Clear Results</button>
   <table>    
     <tr>
       <th>Date</th>
@@ -35,12 +35,12 @@
       <th>Interest Repayment Amount</th>
       <th>Period</th>
     </tr>
-      <tr *ngFor='let result of calcResult'>
-        <td>{{result.date}}</td>
-        <td>{{result.PrincipalBalance}}</td>
-        <td>{{result.PrincipalRepaymentAmount}}</td>
-        <td>{{result.InterestBalance}}</td>
-        <td>{{result.InterestRepaymentAmount}}</td>        
+      <tr *ngFor='let result of calcResults'>
+        <td>{{result.date | date:"yyyy-MMM-dd"}}</td>
+        <td>{{result.PrincipalBalance | currency}}</td>
+        <td>{{result.PrincipalRepaymentAmount | currency}}</td>
+        <td>{{result.InterestBalance | currency}}</td>
+        <td>{{result.InterestRepaymentAmount | currency}}</td>        
         <td>{{result.Period}}</td>        
       </tr>    
 </table>

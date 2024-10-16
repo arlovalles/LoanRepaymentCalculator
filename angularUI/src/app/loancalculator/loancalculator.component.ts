@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormGroup, FormBuilder, ReactiveFormsModule} from '@angular/forms';
 import { CalculatorService } from '../services/calculator.service';
 import { CalculationRequest } from '../model/CalculationRequest';
-import { CalculationResult } from '../model/CalculationResult';
+import { CalculationResult} from '../model/CalculationResult';
 import { MessageService } from '../services/message.service';
 
 @Component({
@@ -19,7 +19,7 @@ export class LoancalculatorComponent {
   protected frequencies:string[] = ["MONTHLY", "WEEKLY", "QUARTERLY", "ANNUALLY"];
   protected crForm : FormGroup;
   protected selectedFrequency:string="";
-  protected calcResult:CalculationResult[] = [];
+  protected calcResults:CalculationResult[]=[];
   private dummyResult:CalculationResult = { date:"2024-01-01",
                                     PrincipalBalance:999.99,
                                     InterestBalance:88.88,
@@ -34,7 +34,7 @@ export class LoancalculatorComponent {
                                             StartDate:"",
                                             EndDate:"",
                                             RepaymentAmount:0.00,
-                                            RepaymentFrequency:"" };
+                                            RepaymentFrequency:""};
 
   constructor(private fb:FormBuilder, private calculatorService:CalculatorService, private messageService:MessageService){
     this.calculatorService = calculatorService;
@@ -59,16 +59,21 @@ export class LoancalculatorComponent {
     this.selectedFrequency = value;    
   }
 
-  SendMessage(message:string):void {
+  SendMessage(message:string, clearBuffer:boolean=false):void {
+    if (clearBuffer) {
+      this.messageService.clear();
+    }
     this.messageService.add(message);
   }
 
   onAddDummyResult():void {
-    this.calcResult.push(this.dummyResult);
+    this.calcResults.push(this.dummyResult);
+    this.SendMessage("Entries: " + this.calcResults.length, true);
   }
 
-  onClearResults():void {
-    this.calcResult = [];
+  onClearOutput():void {
+    this.calcResults = [];
+    this.messageService.clear();
   }
 
   onCalculate():void {
@@ -81,13 +86,17 @@ export class LoancalculatorComponent {
       RepaymentFrequency:this.crForm.get("repayFrequency")?.value 
     };        
 
+    this.onClearOutput();
+
     this.calculatorService.calculate(this.calculationRequest).subscribe({
-      next: (results:CalculationResult[]) => this.calcResult = results,
-      error: (e) => this.SendMessage("Error -> " + e.message),
-      complete:() => this.SendMessage("Complete.")
+      next: (value:CalculationResult[]) => {
+          this.calcResults = Array.from(JSON.parse(value.toString()));        
+      },
+      error: e => this.SendMessage("Error -> " + e.message),
+      complete:() => this.SendMessage("Entries: " + this.calcResults.length)
     });
 
-    console.log(this.calcResult.length);
+    
   }
   
 }
